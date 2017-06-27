@@ -1,0 +1,27 @@
+{
+  "name": "babel-plugin-flow-type-getter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel example/index.js --out-file example/dist/index.js --watch",
+    "start": "node example/dist/index.js"
+  },
+  "keywords": [
+    "flow",
+    "type",
+    "get-type",
+    "get-flow-type"
+  ],
+  "author": "David Dionise",
+  "license": "ISC",
+  "dependencies": {
+    "babylon": "^6.17.4"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-syntax-flow": "^6.18.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "flow-bin": "^0.48.0"
+  }
+}
