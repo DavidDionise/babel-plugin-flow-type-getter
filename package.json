@@ -1,7 +1,7 @@
 {
   "name": "babel-plugin-flow-type-getter",
   "version": "1.0.0",
-  "description": "",
+  "description": "Access flow types from uninstantiated classes.",
   "main": "index.js",
   "scripts": {
     "build": "babel example/index.js --out-file example/dist/index.js --watch",
