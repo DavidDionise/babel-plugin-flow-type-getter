@@ -1,6 +1,6 @@
 class Test1 {
   prop1: number;
-  prop2: Array<User | ID>;
+  prop2: Array<User | string>;
   prop3: Client;
   prop4: boolean;
   prop5: Client | User;
@@ -31,5 +31,5 @@ class Test2 {
 }
 
 console.log('unary typeof = ', typeof Test1.prop3);
-console.log('binary typeof = ', typeof Test1.prop5 == 'Client');
+console.log('binary typeof = ', typeof Test1.prop2 == 'string');
 console.log('is_array = ', Array.isArray(Test1.prop5));

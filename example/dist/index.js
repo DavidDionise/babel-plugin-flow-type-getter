@@ -16,9 +16,9 @@ class Test1 {
         types: ['number']
       },
       prop2: {
-        stringified: 'Array<User | ID>',
+        stringified: 'Array<User | string>',
         is_array: true,
-        types: ['User', 'ID']
+        types: ['User', 'string']
       },
       prop3: {
         stringified: 'Client',
@@ -83,5 +83,5 @@ class Test2 {
 }
 
 console.log('unary typeof = ', Test1.__getFlowTypes().prop3.stringified);
-console.log('binary typeof = ', typeof Test1.prop5 == 'Client');
+console.log('binary typeof = ', Test1.__getFlowTypes().prop2.types.find(__type => __type == 'string') != null);
 console.log('is_array = ', Test1.__getFlowTypes().prop5.is_array);

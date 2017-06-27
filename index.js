@@ -103,10 +103,10 @@ const unaryTypeofReplacementGenerator = (node) => {
 const binaryTypeofReplacementGenerator = (left, right) => {
   const obj_name = left.argument.object.name;
   const prop_name = left.argument.property.name;
-  const right_value = right.name;
+  const right_value = right.value;
   const expression =
     `${obj_name}.${customFunctionName}().
-    ${prop_name}.types.find(__type => __type == ${right_value}) != null`;
+    ${prop_name}.types.find(__type => __type == '${right_value}') != null`;
   const parsed_function = babylon.parse(expression).program.body[0];
 
   return parsed_function;
@@ -169,16 +169,17 @@ module.exports = ({ types : t }) => {
 
       BinaryExpression(path) {
         const { left, right, operator } = path.node;
+        // console.log('right = ', JSON.stringify(right))
         // console.log('bool check : ',
         //   left.type == 'UnaryExpression',
         //   left.operator != null,
         //   left.operator == 'typeof',
         //   left.argument != null,
         //   left.argument.type == 'MemberExpression',
-        //   (left.operator == '==' || left.operator == '==='),
+        //   (operator == '==' || operator == '==='),
         //   class_names_list.find(cn => cn == left.argument.object.name) != null,
         //   right != null,
-        //   right.name != null
+        //   right.value != null
         // )
         if(
           left.type == 'UnaryExpression' &&
@@ -189,7 +190,7 @@ module.exports = ({ types : t }) => {
           (operator == '==' || operator == '===') &&
           class_names_list.find(cn => cn == left.argument.object.name) != null &&
           right &&
-          right.name
+          right.value
         ) {
 
           path.replaceWith(
