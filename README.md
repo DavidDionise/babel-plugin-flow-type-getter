@@ -1,25 +1,11 @@
 ## Access your Flow types from classes before you instantiate objects.
 
 ---
+### To use :
 
 ```javascript
 npm install --save-dev babel-plugin-flow-type-getter babel-plugin-transform-flow-strip-types
 ```
-`.babelrc`
-
-
-const App = () => {
-  return (
-    <YouTubePlaylist
-      width={'85%'}
-      height={390}
-      api_key='YourGoogleApiKey'
-      playlist_id='YourYoutubePlaylistID'
-      show_thumbnails
-    />
-  )
-}
-
 `.babelrc`
 ```javascript
 {
