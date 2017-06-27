@@ -39,7 +39,7 @@ Array.isArray(Test2.prop3); // true
 
 ## Run the example
 
--Navigate to the root directory of the project</br>
--Open the file example/index.js</br>
+-Navigate to the `example` directory of the project</br>
+-Open the file index.js in a text editor (only do this if you want to expriment)</br>
 -Enter the command `npm run build` to start the babel --watch process (keep this shell open)</br>
 -In a new shell, enter the command `npm start` to see the values logged out in example/index.js</br>
