@@ -9,7 +9,7 @@ npm install --save-dev babel-plugin-flow-type-getter babel-plugin-transform-flow
 `.babelrc`
 ```javascript
 {
-  "plugins": ["./index", "transform-flow-strip-types"]
+  "plugins": ["flow-type-getter", "transform-flow-strip-types"]
 }
 ```
 

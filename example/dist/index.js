@@ -7,6 +7,52 @@ class Test1 {
   getTypeTwo() {
     return 'yeah';
   }
+
+  static __getFlowTypes() {
+    return {
+      prop1: {
+        stringified: 'number',
+        is_array: false,
+        types: ['number']
+      },
+      prop2: {
+        stringified: 'Array<User | string>',
+        is_array: true,
+        types: ['User', 'string']
+      },
+      prop3: {
+        stringified: 'Client',
+        is_array: false,
+        types: ['Client']
+      },
+      prop4: {
+        stringified: 'boolean',
+        is_array: false,
+        types: ['boolean']
+      },
+      prop5: {
+        stringified: 'Client | User',
+        is_array: false,
+        types: ['Client', 'User']
+      },
+      prop6: {
+        stringified: 'Array<number>',
+        is_array: true,
+        types: ['number']
+      },
+      prop7: {
+        stringified: 'Array<User>',
+        is_array: true,
+        types: ['User']
+      },
+      prop8: {
+        stringified: '{ a : string, b : number }',
+        is_array: false,
+        types: ['{ a : string, b : number }']
+      }
+    };
+  }
+
 }
 
 class Test2 {
@@ -18,8 +64,24 @@ class Test2 {
   getTypeTwo() {
     return 'yeah';
   }
+
+  static __getFlowTypes() {
+    return {
+      prop1: {
+        stringified: 'number',
+        is_array: false,
+        types: ['number']
+      },
+      prop2: {
+        stringified: 'Array<User | ID>',
+        is_array: true,
+        types: ['User', 'ID']
+      }
+    };
+  }
+
 }
 
-console.log('unary typeof = ', typeof Test1.prop3);
-console.log('binary typeof = ', typeof Test1.prop2 == 'string');
-console.log('is_array = ', Array.isArray(Test1.prop5));
+console.log('unary typeof = ', Test1.__getFlowTypes().prop3.stringified);
+console.log('binary typeof = ', Test1.__getFlowTypes().prop2.types.find(__type => __type == 'string') != null);
+console.log('is_array = ', Test1.__getFlowTypes().prop5.is_array);
