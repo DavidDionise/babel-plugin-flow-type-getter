@@ -1,0 +1,17 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "babel-plugin-flow-type-getter sandbox project",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel index.js --out-file dist/index.js --watch",
+    "start": "node dist/index.js"
+  },
+  "author": "David Dionise",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-flow-type-getter": "^1.0.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0"
+  }
+}

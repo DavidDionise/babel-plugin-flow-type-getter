@@ -1,0 +1,3 @@
+{
+  "plugins": ["./index", "transform-flow-strip-types"]
+}
