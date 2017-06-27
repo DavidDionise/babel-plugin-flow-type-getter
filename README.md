@@ -1,5 +1,6 @@
 ## Access your Flow types from classes before you instantiate objects.
-## Types can be accessed using standard JavaScript `typeof` and `Array.isArray()` type checks.
+
+---
 
 ```javascript
 npm install --save-dev babel-plugin-flow-type-getter babel-plugin-transform-flow-strip-types
@@ -26,6 +27,8 @@ const App = () => {
 }
 ```
 
+---
+
 ## Example
 
 ```javascript
@@ -45,11 +48,12 @@ typeof Test1.prop3; // 'string | Test1'
 typeof Test1.prop2 == 'Test2'; // true
 typeof Test2.prop1 == 'Test1'; // false
 Array.isArray(Test2.prop3); // true
-```
+````
+---
 
 ## Run the example
 
--Navigate to the root directory of the project
--Open the file example/index.js
--Enter the command `npm run build` to start the babel --watch process (keep this shell open)
--In a new shell, enter the command `npm start` to see the values logged out in example/index.js
+-Navigate to the root directory of the project</br>
+-Open the file example/index.js</br>
+-Enter the command `npm run build` to start the babel --watch process (keep this shell open)</br>
+-In a new shell, enter the command `npm start` to see the values logged out in example/index.js</br>
