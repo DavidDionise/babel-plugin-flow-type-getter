@@ -150,10 +150,17 @@ const replacementGenerator = (node, replacement_case) => {
 
 const objectStringGenerator = (node) => {
   if(t.isMemberExpression(node)) {
-    return `${objectStringGenerator(node.object)}.${node.property.name}`;
-  }
-  else if(t.isStringLiteral(node, { computed : true })) {
-    return `${objectStringGenerator(node.object)}.['${node.property.name}']`;
+  	if(node.computed) {
+      if(t.isStringLiteral(node.property)) {
+        return `${objectStringGenerator(node.object)}['${node.property.value}']`;
+      }
+      else {
+        return `${objectStringGenerator(node.object)}[${node.property.name}]`;
+      }
+  	}
+  	else {
+  		return `${objectStringGenerator(node.object)}.${node.property.name}`;
+  	}
   }
   else if(t.isIdentifier(node)) {
     return node.name;
