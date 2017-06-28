@@ -2,9 +2,12 @@ const babylon = require('babylon');
 const t = require('babel-types');
 const fs = require('fs');
 const { resolve } = require('path');
+const acorn = require('acorn');
+const { generate } = require('astring');
 
 let class_names_list = [];
 const customFunctionName = '__getFlowTypes';
+const COMMENT_CONSTANT = '_____babel-plugin-flow-type-getter-marker-comment____'
 
 const typeValueGenerator = (typeAnnotation) => {
   const { type, types, properties } = typeAnnotation;
@@ -29,17 +32,6 @@ const typeValueGenerator = (typeAnnotation) => {
           types : [name]
         };
       }
-    case 'ObjectTypeAnnotation':
-      const parsed_object = properties.map(({key, value}) => {
-        const { optional, static } = value;
-        return `${key.name} :${optional ? '?' : ''}${static ? 'static ' : ''} ${typeValueGenerator(value).stringified}`;
-      }).join(', ');
-
-      return {
-        stringified : '{ ' + parsed_object + ' }',
-        is_array : false,
-        types : ['{ ' + parsed_object + ' }']
-      };
     case 'UnionTypeAnnotation':
       const union_types_list = types.map(typeValueGenerator).map(val => val.stringified);
       return {
@@ -91,34 +83,81 @@ const getTypesBodyGenerator = (class_types) => {
   )
 }
 
-const unaryTypeofReplacementGenerator = (node) => {
-  const obj_name = node.argument.object.name;
-  const prop_name = node.argument.property.name;
-  const expression = `${obj_name}.${customFunctionName}().${prop_name}.stringified`;
-  const parsed_function = babylon.parse(expression).program.body[0];
+const repeatedNode = (path) => {
+  const parent = path.findParent(path => path.isReturnStatement());
 
-  return parsed_function;
+  if(
+    (parent != null) &&
+    (Array.isArray(parent.node.leadingComments)) &&
+    (parent.node.leadingComments[0].value == COMMENT_CONSTANT)
+  ) {
+    return true;
+  }
+  else {
+    return false;
+  }
 }
 
-const binaryTypeofReplacementGenerator = (left, right) => {
-  const obj_name = left.argument.object.name;
-  const prop_name = left.argument.property.name;
-  const right_value = right.value;
-  const expression =
-    `${obj_name}.${customFunctionName}().
-    ${prop_name}.types.find(__type => __type == '${right_value}') != null`;
-  const parsed_function = babylon.parse(expression).program.body[0];
+const replacementGenerator = (node, replacement_case) => {
+  let expression, object_string, prop_name, code_expression;
+  switch(replacement_case) {
+    case 'unary':
+      object_string = objectStringGenerator(node.argument.object);
+      prop_name = node.argument.property.name;
+      expression = `${object_string}.${customFunctionName}().${prop_name}.stringified`;
+      code_expression = `typeof ${object_string}.${prop_name}`;
+      break;
+    case 'binary':
+      const { left, right } = node;
+      object_string = objectStringGenerator(left.argument.object);
+      prop_name = left.argument.property.name;
+      const right_value = right.value;
+      if(/^Array<.*>$/.test(right_value)) {
+        throw new Error(`Use 'Array.isArray' to check if the value is an array.`)
+      }
+      expression = `${object_string}.${customFunctionName}().${prop_name}.types.find(__type => __type == '${right_value}') != null`;
+      code_expression = `typeof ${object_string}.${prop_name} == ${right_value}`;
+      break;
+    case 'array':
+      const argument = node.arguments[0];
+      object_string = objectStringGenerator(argument.object);
+      prop_name = argument.property.name;
+      expression = `${object_string}.${customFunctionName}().${prop_name}.is_array`;
+      code_expression = `Array.isArray(${object_string}.${prop_name})`;
+      break;
+    default:
+      throw new Error(
+        `Invalid argument passed in babel-plugin-flow-type-getter.
+        Please report this issue at https://github.com/DavidDionise/babel-plugin-flow-type-getter/issues`
+      );
+      return;
+  }
 
-  return parsed_function;
+  return (
+    babylon.parse(
+      `(() => {
+        if(${object_string}.__getFlowTypes != null) {
+          return ${expression};
+        }
+        else {
+          //${COMMENT_CONSTANT}
+          return ${code_expression}
+        }
+      })()`
+    ).program.body[0]
+  )
 }
 
-const isArrayReplacementGenerator = (argument) => {
-  const obj_name = argument.object.name;
-  const prop_name = argument.property.name;
-  const expression = `${obj_name}.${customFunctionName}().${prop_name}.is_array`;
-  const parsed_function = babylon.parse(expression).program.body[0];
-
-  return parsed_function;
+const objectStringGenerator = (node) => {
+  if(t.isMemberExpression(node)) {
+    return `${objectStringGenerator(node.object)}.${node.property.name}`;
+  }
+  else if(t.isStringLiteral(node, { computed : true })) {
+    return `${objectStringGenerator(node.object)}.['${node.property.name}']`;
+  }
+  else if(t.isIdentifier(node)) {
+    return node.name;
+  }
 }
 
 module.exports = ({ types : t }) => {
@@ -156,34 +195,27 @@ module.exports = ({ types : t }) => {
         const { operator, argument } = path.node;
 
         if(
-          path.parent.type != 'BinaryExpression' &&
-          operator == 'typeof' &&
-          argument.type == 'MemberExpression' &&
-          class_names_list.find(c => c == argument.object.name) != null
+          !repeatedNode(path) &&
+          !t.isBinaryExpression(path.parent, { operator : 'typeof' }) &&
+          t.isMemberExpression(argument)
         ) {
           path.replaceWith(
-            unaryTypeofReplacementGenerator(path.node)
+            replacementGenerator(path.node, 'unary')
           )
         }
       },
 
       BinaryExpression(path) {
         const { left, right, operator } = path.node;
-
         if(
-          left.type == 'UnaryExpression' &&
-          left.operator &&
-          left.operator == 'typeof' &&
-          left.argument &&
-          left.argument.type == 'MemberExpression' &&
-          (operator == '==' || operator == '===') &&
-          class_names_list.find(cn => cn == left.argument.object.name) != null &&
+          !repeatedNode(path) &&
+          t.isUnaryExpression(left, {operator : 'typeof'}) &&
+          t.isMemberExpression(left.argument) &&
           right &&
           right.value
         ) {
-
           path.replaceWith(
-            binaryTypeofReplacementGenerator(left, right)
+            replacementGenerator(path.node, 'binary')
           )
         }
       },
@@ -193,16 +225,16 @@ module.exports = ({ types : t }) => {
         const { arguments } = path.node;
 
         if(
+          !repeatedNode(path) &&
         	object && object.name &&
         	property && property.name &&
           object.name == 'Array' &&
           property.name == 'isArray' &&
           arguments &&
-          arguments[0].object &&
-          class_names_list.find(cn => cn == arguments[0].object.name) != null
+          arguments[0].object
         ) {
           path.replaceWith(
-            isArrayReplacementGenerator(arguments[0])
+            replacementGenerator(path.node, 'array')
           )
         }
       }

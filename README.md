@@ -20,20 +20,45 @@ npm install --save-dev babel-plugin-flow-type-getter babel-plugin-transform-flow
 ```javascript
 class Test1 {
   prop1: number;
-  prop2: Test2;
-  prop3: string | Test1;
-}
-class Test2 {
-  prop1: string;
-  prop2: Array<number>
-  prop3: ?Array<Test1 | string>;
+  prop2: Array<User | string>;
+  prop3: Client;
+  prop4: boolean;
+  prop5: Client | User;
+  prop6: ?Array<number>;
+  prop7: Array<User>;
+  prop8: ?{a: string, b: ?number};
+
+  static getType() {
+    return 'cool';
+  }
+
+  getTypeTwo() {
+    return 'yeah';
+  }
 }
 
-typeof Test1.prop1; // 'number'
-typeof Test1.prop3; // 'string | Test1'
-typeof Test1.prop2 == 'Test2'; // true
-typeof Test2.prop1 == 'Test1'; // false
-Array.isArray(Test2.prop3); // true
+class Test2 {
+  prop1: number;
+  prop2: Array<User | ID>;
+
+  static getType() {
+    return 'cool';
+  }
+
+  getTypeTwo() {
+    return 'yeah';
+  }
+}
+
+const obj_test = {
+  t1 : Test1,
+  t2 : Test2
+}
+
+typeof obj_test.t1.prop8 == 'User'); // false
+typeof Test1.prop2 == 'User'); // true
+Array.isArray(Test1.prop5)); // false
+
 ````
 ---
 

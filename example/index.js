@@ -30,6 +30,11 @@ class Test2 {
   }
 }
 
-console.log('unary typeof = ', typeof Test1.prop3);
-console.log('binary typeof = ', typeof Test1.prop2 == 'string');
-console.log('is_array = ', Array.isArray(Test1.prop5));
+const obj_test = {
+  t1 : Test1,
+  t2 : Test2
+}
+
+typeof obj_test.t1.prop8 == 'User'); // false
+typeof Test1.prop2 == 'User'); // true
+Array.isArray(Test1.prop5)); // false
