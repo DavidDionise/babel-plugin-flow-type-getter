@@ -127,7 +127,7 @@ const replacementGenerator = (path, replacement_case) => {
         throw new Error(`Use 'Array.isArray' to check if the value is an array.`)
       }
       if(left.argument.computed) {
-        if(t.isStringLiteral(eft.argument.property)) {
+        if(t.isStringLiteral(left.argument.property)) {
           expression = `${object_string}.${customFunctionName}()['${left.argument.property.value}'].types.find(__type => __type == '${right_value}') != null`;
         }
         else {
