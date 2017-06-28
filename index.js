@@ -98,13 +98,24 @@ const repeatedNode = (path) => {
   }
 }
 
-const replacementGenerator = (node, replacement_case) => {
+const replacementGenerator = (path, replacement_case) => {
+  const { node } = path;
   let expression, object_string, prop_name, code_expression;
   switch(replacement_case) {
     case 'unary':
       object_string = objectStringGenerator(node.argument.object);
       prop_name = node.argument.property.name;
-      expression = `${object_string}.${customFunctionName}().${prop_name}.stringified`;
+      if(node.argument.computed) {
+        if(t.isStringLiteral(node.argument.property)) {
+          expression = `${object_string}.${customFunctionName}()['${node.argument.property.value}'].stringified`;
+        }
+        else {
+          expression = `${object_string}.${customFunctionName}()[${prop_name}].stringified`;
+        }
+      }
+      else {
+        expression = `${object_string}.${customFunctionName}().${prop_name}.stringified`;
+      }
       code_expression = `typeof ${object_string}.${prop_name}`;
       break;
     case 'binary':
@@ -115,14 +126,34 @@ const replacementGenerator = (node, replacement_case) => {
       if(/^Array<.*>$/.test(right_value)) {
         throw new Error(`Use 'Array.isArray' to check if the value is an array.`)
       }
-      expression = `${object_string}.${customFunctionName}().${prop_name}.types.find(__type => __type == '${right_value}') != null`;
+      if(left.argument.computed) {
+        if(t.isStringLiteral(eft.argument.property)) {
+          expression = `${object_string}.${customFunctionName}()['${left.argument.property.value}'].types.find(__type => __type == '${right_value}') != null`;
+        }
+        else {
+          expression = `${object_string}.${customFunctionName}()[${prop_name}].types.find(__type => __type == '${right_value}') != null`;
+        }
+      }
+      else {
+        expression = `${object_string}.${customFunctionName}().${prop_name}.types.find(__type => __type == '${right_value}') != null`;
+      }
       code_expression = `typeof ${object_string}.${prop_name} == ${right_value}`;
       break;
     case 'array':
       const argument = node.arguments[0];
       object_string = objectStringGenerator(argument.object);
       prop_name = argument.property.name;
-      expression = `${object_string}.${customFunctionName}().${prop_name}.is_array`;
+      if(argument.computed) {
+        if(t.isStringLiteral(argument.property)) {
+          expression = `${object_string}.${customFunctionName}()['${argument.property.value}'].is_array`;
+        }
+        else {
+          expression = `${object_string}.${customFunctionName}()[${prop_name}].is_array`;
+        }
+      }
+      else {
+        expression = `${object_string}.${customFunctionName}().${prop_name}.is_array`;
+      }
       code_expression = `Array.isArray(${object_string}.${prop_name})`;
       break;
     default:
@@ -207,7 +238,7 @@ module.exports = ({ types : t }) => {
           t.isMemberExpression(argument)
         ) {
           path.replaceWith(
-            replacementGenerator(path.node, 'unary')
+            replacementGenerator(path, 'unary')
           )
         }
       },
@@ -222,7 +253,7 @@ module.exports = ({ types : t }) => {
           right.value
         ) {
           path.replaceWith(
-            replacementGenerator(path.node, 'binary')
+            replacementGenerator(path, 'binary')
           )
         }
       },
@@ -241,7 +272,7 @@ module.exports = ({ types : t }) => {
           arguments[0].object
         ) {
           path.replaceWith(
-            replacementGenerator(path.node, 'array')
+            replacementGenerator(path, 'array')
           )
         }
       }

@@ -88,13 +88,14 @@ const obj_test = {
 };
 
 const test1_str = 't1';
+const testing_this_string = 'prop1';
 
 console.log('unary test : ', (() => {
-  if (obj_test[test1_str].__getFlowTypes != null) {
-    return obj_test[test1_str].__getFlowTypes().prop1.stringified;
+  if (Test1.__getFlowTypes != null) {
+    return Test1.__getFlowTypes()[testing_this_string].stringified;
   } else {
     //_____babel-plugin-flow-type-getter-marker-comment____
-    return typeof obj_test[test1_str].prop1;
+    return typeof Test1.testing_this_string;
   }
 })()); // number
 console.log('binary test : ', (() => {
@@ -107,17 +108,16 @@ console.log('binary test : ', (() => {
 })()); // true
 console.log('array test : ', (() => {
   if (Test1.__getFlowTypes != null) {
-    return Test1.__getFlowTypes().prop5.is_array;
+    return Test1.__getFlowTypes()['prop5'].is_array;
   } else {
     //_____babel-plugin-flow-type-getter-marker-comment____
-    return Array.isArray(Test1.prop5);
+    return Array.isArray(Test1.undefined);
   }
 })()); // false
 console.log('array test : ', (() => {
   if (obj_test['t2'].__getFlowTypes != null) {
     return obj_test['t2'].__getFlowTypes().prop2.is_array;
   } else {
-    //_____babel-plugin-flow-type-getter-marker-comment____
     return Array.isArray(obj_test['t2'].prop2);
   }
 })()); // true
