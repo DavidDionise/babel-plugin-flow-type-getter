@@ -169,18 +169,7 @@ module.exports = ({ types : t }) => {
 
       BinaryExpression(path) {
         const { left, right, operator } = path.node;
-        // console.log('right = ', JSON.stringify(right))
-        // console.log('bool check : ',
-        //   left.type == 'UnaryExpression',
-        //   left.operator != null,
-        //   left.operator == 'typeof',
-        //   left.argument != null,
-        //   left.argument.type == 'MemberExpression',
-        //   (operator == '==' || operator == '==='),
-        //   class_names_list.find(cn => cn == left.argument.object.name) != null,
-        //   right != null,
-        //   right.value != null
-        // )
+
         if(
           left.type == 'UnaryExpression' &&
           left.operator &&
@@ -200,14 +189,16 @@ module.exports = ({ types : t }) => {
       },
 
       CallExpression(path) {
-        const obj_name = path.node.callee.object.name;
-        const prop_name = path.node.callee.property.name;
+      	const { object, property } = path.node.callee;
         const { arguments } = path.node;
 
         if(
-          obj_name == 'Array' &&
-          prop_name == 'isArray' &&
+        	object && object.name &&
+        	property && property.name &&
+          object.name == 'Array' &&
+          property.name == 'isArray' &&
           arguments &&
+          arguments[0].object &&
           class_names_list.find(cn => cn == arguments[0].object.name) != null
         ) {
           path.replaceWith(
