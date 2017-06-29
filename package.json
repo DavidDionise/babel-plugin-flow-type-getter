@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-flow-type-getter",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Access flow types from uninstantiated classes.",
   "main": "index.js",
   "repository": {
