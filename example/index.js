@@ -35,6 +35,10 @@ const obj_test = {
   t2 : Test2
 }
 
+const test_obj_2 = {
+  prop1 : 'hellooo woooooorrlld'
+}
+
 const test1_str = 't1';
 const testing_this_string = 'prop1';
 
@@ -45,3 +49,4 @@ console.log('array test : ', Array.isArray(obj_test['t2'].prop2)) // true
 console.log('undefined test : ', typeof Test1.prop9); // undefined
 console.log('binary undefined test : ', typeof Test1.prop9 == 'string'); // false
 console.log('array undefined test : ', Array.isArray(Test1.prop9)); // false
+console.log('type that is not in a class test : ', typeof test_obj_2.prop1 == 'string'); // true

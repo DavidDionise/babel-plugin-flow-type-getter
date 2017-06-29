@@ -87,6 +87,10 @@ const obj_test = {
   t2: Test2
 };
 
+const test_obj_2 = {
+  prop1: 'hellooo woooooorrlld'
+};
+
 const test1_str = 't1';
 const testing_this_string = 'prop1';
 
@@ -103,7 +107,7 @@ console.log('binary test : ', (() => {
     return obj_test.t1.__getFlowTypes().prop2 != null ? obj_test.t1.__getFlowTypes().prop2.types.find(__type => __type == 'undefined') != null : false;
   } else {
     //_____babel-plugin-flow-type-getter-marker-comment____
-    return typeof obj_test.t1.prop2 == User;
+    return typeof obj_test.t1.prop2 == 'User';
   }
 })()); // true
 console.log('array test : ', (() => {
@@ -135,7 +139,7 @@ console.log('binary undefined test : ', (() => {
     return Test1.__getFlowTypes().prop9 != null ? Test1.__getFlowTypes().prop9.types.find(__type => __type == 'undefined') != null : false;
   } else {
     //_____babel-plugin-flow-type-getter-marker-comment____
-    return typeof Test1.prop9 == string;
+    return typeof Test1.prop9 == 'string';
   }
 })()); // false
 console.log('array undefined test : ', (() => {
@@ -146,3 +150,11 @@ console.log('array undefined test : ', (() => {
     return Array.isArray(Test1.prop9);
   }
 })()); // false
+console.log('type that is not in a class test : ', (() => {
+  if (test_obj_2.__getFlowTypes != null) {
+    return test_obj_2.__getFlowTypes().prop1 != null ? test_obj_2.__getFlowTypes().prop1.types.find(__type => __type == 'undefined') != null : false;
+  } else {
+    //_____babel-plugin-flow-type-getter-marker-comment____
+    return typeof test_obj_2.prop1 == 'string';
+  }
+})()); // true

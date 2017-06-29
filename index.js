@@ -149,7 +149,7 @@ const replacementGenerator = (path, replacement_case) => {
       else {
         expression = binaryExpressionGenerator(`${object_string}.${customFunctionName}().${prop_name}`);
       }
-      code_expression = `typeof ${object_string}.${prop_name} == ${right_value}`;
+      code_expression = `typeof ${object_string}.${prop_name} == '${right_value}'`;
       break;
     case 'array':
       const argument = node.arguments[0];
