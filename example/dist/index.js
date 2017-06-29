@@ -92,7 +92,7 @@ const testing_this_string = 'prop1';
 
 console.log('unary test : ', (() => {
   if (Test1.__getFlowTypes != null) {
-    return Test1.__getFlowTypes()[testing_this_string].stringified;
+    return Test1.__getFlowTypes()[testing_this_string] != null ? Test1.__getFlowTypes()[testing_this_string].stringified : 'undefined';
   } else {
     //_____babel-plugin-flow-type-getter-marker-comment____
     return typeof Test1.testing_this_string;
@@ -100,7 +100,7 @@ console.log('unary test : ', (() => {
 })()); // number
 console.log('binary test : ', (() => {
   if (obj_test.t1.__getFlowTypes != null) {
-    return obj_test.t1.__getFlowTypes().prop2.types.find(__type => __type == 'User') != null;
+    return obj_test.t1.__getFlowTypes().prop2 != null ? obj_test.t1.__getFlowTypes().prop2.types.find(__type => __type == 'undefined') != null : false;
   } else {
     //_____babel-plugin-flow-type-getter-marker-comment____
     return typeof obj_test.t1.prop2 == User;
@@ -108,7 +108,7 @@ console.log('binary test : ', (() => {
 })()); // true
 console.log('array test : ', (() => {
   if (Test1.__getFlowTypes != null) {
-    return Test1.__getFlowTypes()['prop5'].is_array;
+    return Test1.__getFlowTypes()['prop5'] != null ? Test1.__getFlowTypes()['prop5'].is_array : false;
   } else {
     //_____babel-plugin-flow-type-getter-marker-comment____
     return Array.isArray(Test1.undefined);
@@ -116,8 +116,33 @@ console.log('array test : ', (() => {
 })()); // false
 console.log('array test : ', (() => {
   if (obj_test['t2'].__getFlowTypes != null) {
-    return obj_test['t2'].__getFlowTypes().prop2.is_array;
+    return obj_test['t2'].__getFlowTypes().prop2 != null ? obj_test['t2'].__getFlowTypes().prop2.is_array : false;
   } else {
+    //_____babel-plugin-flow-type-getter-marker-comment____
     return Array.isArray(obj_test['t2'].prop2);
   }
 })()); // true
+console.log('undefined test : ', (() => {
+  if (Test1.__getFlowTypes != null) {
+    return Test1.__getFlowTypes().prop9 != null ? Test1.__getFlowTypes().prop9.stringified : 'undefined';
+  } else {
+    //_____babel-plugin-flow-type-getter-marker-comment____
+    return typeof Test1.prop9;
+  }
+})()); // undefined
+console.log('binary undefined test : ', (() => {
+  if (Test1.__getFlowTypes != null) {
+    return Test1.__getFlowTypes().prop9 != null ? Test1.__getFlowTypes().prop9.types.find(__type => __type == 'undefined') != null : false;
+  } else {
+    //_____babel-plugin-flow-type-getter-marker-comment____
+    return typeof Test1.prop9 == string;
+  }
+})()); // false
+console.log('array undefined test : ', (() => {
+  if (Test1.__getFlowTypes != null) {
+    return Test1.__getFlowTypes().prop9 != null ? Test1.__getFlowTypes().prop9.is_array : false;
+  } else {
+    //_____babel-plugin-flow-type-getter-marker-comment____
+    return Array.isArray(Test1.prop9);
+  }
+})()); // false

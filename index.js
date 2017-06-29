@@ -98,6 +98,18 @@ const repeatedNode = (path) => {
   }
 }
 
+const unaryExpressionGenerator = (expression) => {
+  return `${expression} != null ? ${expression}.stringified : 'undefined'`;
+}
+
+const binaryExpressionGenerator = (expression, right_value) => {
+  return `${expression} != null ? ${expression}.types.find(__type => __type == '${right_value}') != null : false`;
+}
+
+const arrayExpressionGenerator = (expression) => {
+  return `${expression} != null ? ${expression}.is_array : false`;
+}
+
 const replacementGenerator = (path, replacement_case) => {
   const { node } = path;
   let expression, object_string, prop_name, code_expression;
@@ -107,14 +119,14 @@ const replacementGenerator = (path, replacement_case) => {
       prop_name = node.argument.property.name;
       if(node.argument.computed) {
         if(t.isStringLiteral(node.argument.property)) {
-          expression = `${object_string}.${customFunctionName}()['${node.argument.property.value}'].stringified`;
+          expression = unaryExpressionGenerator(`${object_string}.${customFunctionName}()['${node.argument.property.value}']`);
         }
         else {
-          expression = `${object_string}.${customFunctionName}()[${prop_name}].stringified`;
+          expression = unaryExpressionGenerator(`${object_string}.${customFunctionName}()[${prop_name}]`);
         }
       }
       else {
-        expression = `${object_string}.${customFunctionName}().${prop_name}.stringified`;
+        expression = unaryExpressionGenerator(`${object_string}.${customFunctionName}().${prop_name}`);
       }
       code_expression = `typeof ${object_string}.${prop_name}`;
       break;
@@ -128,14 +140,14 @@ const replacementGenerator = (path, replacement_case) => {
       }
       if(left.argument.computed) {
         if(t.isStringLiteral(left.argument.property)) {
-          expression = `${object_string}.${customFunctionName}()['${left.argument.property.value}'].types.find(__type => __type == '${right_value}') != null`;
+          expression = binaryExpressionGenerator(`${object_string}.${customFunctionName}()['${left.argument.property.value}']`);
         }
         else {
-          expression = `${object_string}.${customFunctionName}()[${prop_name}].types.find(__type => __type == '${right_value}') != null`;
+          expression = binaryExpressionGenerator(`${object_string}.${customFunctionName}()[${prop_name}]`);
         }
       }
       else {
-        expression = `${object_string}.${customFunctionName}().${prop_name}.types.find(__type => __type == '${right_value}') != null`;
+        expression = binaryExpressionGenerator(`${object_string}.${customFunctionName}().${prop_name}`);
       }
       code_expression = `typeof ${object_string}.${prop_name} == ${right_value}`;
       break;
@@ -145,14 +157,14 @@ const replacementGenerator = (path, replacement_case) => {
       prop_name = argument.property.name;
       if(argument.computed) {
         if(t.isStringLiteral(argument.property)) {
-          expression = `${object_string}.${customFunctionName}()['${argument.property.value}'].is_array`;
+          expression = arrayExpressionGenerator(`${object_string}.${customFunctionName}()['${argument.property.value}']`);
         }
         else {
-          expression = `${object_string}.${customFunctionName}()[${prop_name}].is_array`;
+          expression = arrayExpressionGenerator(`${object_string}.${customFunctionName}()[${prop_name}]`);
         }
       }
       else {
-        expression = `${object_string}.${customFunctionName}().${prop_name}.is_array`;
+        expression = arrayExpressionGenerator(`${object_string}.${customFunctionName}().${prop_name}`);
       }
       code_expression = `Array.isArray(${object_string}.${prop_name})`;
       break;

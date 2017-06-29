@@ -42,3 +42,6 @@ console.log('unary test : ', typeof Test1[testing_this_string]); // number
 console.log('binary test : ', typeof obj_test.t1.prop2 == 'User'); // true
 console.log('array test : ', Array.isArray(Test1['prop5'])); // false
 console.log('array test : ', Array.isArray(obj_test['t2'].prop2)) // true
+console.log('undefined test : ', typeof Test1.prop9); // undefined
+console.log('binary undefined test : ', typeof Test1.prop9 == 'string'); // false
+console.log('array undefined test : ', Array.isArray(Test1.prop9)); // false
