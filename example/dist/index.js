@@ -93,6 +93,7 @@ const test_obj_2 = {
 
 const test1_str = 't1';
 const testing_this_string = 'prop1';
+const no_def = undefined;
 
 console.log('unary test : ', (() => {
   if (Test1.__getFlowTypes != null) {
@@ -158,3 +159,5 @@ console.log('type that is not in a class test : ', (() => {
     return typeof test_obj_2.prop1 == 'string';
   }
 })()); // true
+console.log(`'undefined' unary test : `, typeof no_def); // undefined
+console.log(`'undefined' binary test : `, typeof no_def == 'undefined'); // true

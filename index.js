@@ -262,7 +262,8 @@ module.exports = ({ types : t }) => {
           t.isUnaryExpression(left, {operator : 'typeof'}) &&
           t.isMemberExpression(left.argument) &&
           right &&
-          right.value
+          right.value &&
+          right.value != 'undefined'
         ) {
           path.replaceWith(
             replacementGenerator(path, 'binary')
